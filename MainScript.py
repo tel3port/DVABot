@@ -2,11 +2,13 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import traceback
 import time
+import random
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
+num_of_articles = random.randint(5, 10)
 
 class LitBot:
     def __init__(self, username, password):
@@ -43,31 +45,34 @@ class LitBot:
             print(traceback.format_exc())
             time.sleep(2)
 
-    def extract_words(self):
+    def scrape_written_content(self):
         fill_all_xpath = '//*[@id="fill_all"]'
         submit_xpath = '//*[@id="quick_submit"]'
-        story_title = ""
-        full_page_content = ""
-        try:
-            time.sleep(5)
-            self.driver.get('https://www.plot-generator.org.uk/story/')
-            time.sleep(5)
-            self.driver.find_element_by_xpath(fill_all_xpath).click()
-            time.sleep(2)
-            self.driver.find_element_by_xpath(submit_xpath).click()
-            time.sleep(3)
-            story_title = self.driver.title.split('|')[0]
-            story_text = self.driver.find_element_by_class_name("blurb").text
 
-            my_content = story_text.replace(". ", ". \n")
+        extracted_dict = {}
+        for x in range(num_of_articles):
+            try:
+                time.sleep(5)
+                self.driver.get('https://www.plot-generator.org.uk/story/')
+                time.sleep(5)
+                self.driver.find_element_by_xpath(fill_all_xpath).click()
+                time.sleep(2)
+                self.driver.find_element_by_xpath(submit_xpath).click()
+                time.sleep(3)
+                story_title = self.driver.title.split('|')[0]
+                story_text = self.driver.find_element_by_class_name("blurb").text
 
-            full_page_content = f"{my_content} \n https://is-the-best.xyz/"
+                my_content = story_text.replace(". ", ". \n")
 
-        except Exception as e:
-            print(f"the scraping issue at : ", e)
-            print(traceback.format_exc())
+                full_page_content = f"{my_content} \n https://is-the-best.xyz/"
 
-        return story_title.title(), full_page_content
+                extracted_dict[x] = [story_title.title(), full_page_content]
+
+            except Exception as e:
+                print(f"the scraping issue at : ", e)
+                print(traceback.format_exc())
+
+        return extracted_dict
 
     def submit_words(self, current_title, current_content):
         submit_xpath = '//*[@id="site-header-submit-button"]'
@@ -108,12 +113,10 @@ class LitBot:
 
 if __name__ == "__main__":
     lb = LitBot("saber20k", 'q-MnK&5n"x#i#@F')
-    extracted_text = lb.extract_words()
-
-    title = extracted_text[0]
-    text = extracted_text[1]
+    extracted_text_dict = lb.scrape_written_content()
 
     lb.deviant_art_login()
-    lb.submit_words(title, text)
+    for i in range(len(extracted_text_dict)):
+        lb.submit_words(extracted_text_dict.get(i)[0], extracted_text_dict.get(i)[1])
 
 
