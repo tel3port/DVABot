@@ -3,12 +3,23 @@ from selenium.webdriver.support.ui import Select
 import traceback
 import time
 import random
+import string
+from resources import constants
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
+comments_path = constants.comments_path
 num_of_articles = random.randint(5, 10)
+comments_list = []
+
+with open(comments_path) as f:
+    lines = f.readlines()
+
+for line in lines:
+    comments_list.append(line)
+
 
 class LitBot:
     def __init__(self, username, password):
@@ -64,7 +75,7 @@ class LitBot:
 
                 my_content = story_text.replace(". ", ". \n")
 
-                full_page_content = f"{my_content} \n https://is-the-best.xyz/"
+                full_page_content = f"{my_content} \n https://crypto-money.is-the-best.xyz/"
 
                 extracted_dict[x] = [story_title.title(), full_page_content]
 
@@ -110,13 +121,67 @@ class LitBot:
             print(traceback.format_exc())
             time.sleep(2)
 
+    def deviant_art_extract_links(self):
+        link_el_selector = "a[data-hook*='deviation_link']"
+        random_letter = random.choice(list(string.ascii_lowercase))
+        deviation_links = []
+
+        try:
+            self.driver.get(f'https://www.deviantart.com/search?q={random_letter}')
+            time.sleep(5)
+            link_elements = self.driver.find_elements_by_css_selector(link_el_selector)
+
+            for el in link_elements:
+                print(el.get_attribute('href'))
+                deviation_links.append(el.get_attribute('href'))
+
+        except Exception as e:
+            print(f"deviant_art link extraction issue at : ", e)
+            print(traceback.format_exc())
+            time.sleep(2)
+
+        print("number of links: ", len(deviation_links))
+
+        return deviation_links
+
+    def deviation_commenter(self, single_link, rand_comment):
+        selector = "div[data-hook*='comments_thread']"
+        comment_box_xpath = "//*[contains(text(), 'Add a new comment...')]"
+        commentselector = "div[data-offset-key*='foo-0-0']"
+        comment_btn_xpath = "//button[contains(.,'Cancel')]/following-sibling::button"
+        try:
+            self.driver.get(single_link)
+            time.sleep(5)
+            element = self.driver.find_element_by_css_selector(selector)
+            self.driver.execute_script("arguments[0].scrollIntoView();", element)
+            time.sleep(5)
+            self.driver.find_element_by_xpath(comment_box_xpath).click()
+            time.sleep(2)
+            self.driver.find_element_by_css_selector(commentselector).send_keys(rand_comment)
+            time.sleep(5)
+            btn_element = self.driver.find_element_by_xpath(comment_btn_xpath)
+            ActionChains(self.driver).move_to_element(btn_element).click(btn_element).perform()
+
+        except Exception as e:
+            print(f"deviant_art link extraction issue at : ", e)
+            print(traceback.format_exc())
+            time.sleep(2)
+
 
 if __name__ == "__main__":
     lb = LitBot("saber20k", 'q-MnK&5n"x#i#@F')
+
     extracted_text_dict = lb.scrape_written_content()
 
     lb.deviant_art_login()
     for i in range(len(extracted_text_dict)):
         lb.submit_words(extracted_text_dict.get(i)[0], extracted_text_dict.get(i)[1])
+
+    dev_links = lb.deviant_art_extract_links()
+
+    for link in dev_links:
+        random_comment = random.choice(comments_list)
+        lb.deviation_commenter(link, random_comment)
+
 
 
