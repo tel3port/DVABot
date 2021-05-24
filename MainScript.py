@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+import os
 import traceback
 import time
 import random
@@ -34,7 +35,10 @@ class LitBot:
         chrome_options.add_argument("--disable-popup-blocking")
         chrome_options.add_argument("--disable-infobars")
         chrome_options.add_experimental_option("excludeSwitches", ['enable-automation'])
-        self.driver = webdriver.Chrome("/home/m/PycharmProjects/DVABot/resources/chromedriver", options=chrome_options)
+        chrome_options.add_argument("--headless")
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
+        # self.driver = webdriver.Chrome("/home/m/PycharmProjects/DVABot/resources/chromedriver", options=chrome_options)
 
     def deviant_art_login(self):
         username_xpath = '//*[@id="username"]'
@@ -42,6 +46,7 @@ class LitBot:
         login_xpath = '//*[@id="loginbutton"]'
 
         try:
+            print("login to DA")
             self.driver.get('https://www.deviantart.com/users/login')
             time.sleep(5)
             self.driver.find_element_by_xpath(username_xpath).send_keys(self.username)
@@ -50,7 +55,7 @@ class LitBot:
             self.driver.find_element_by_xpath(login_xpath).click()
 
             time.sleep(10)
-
+            print("login successful!")
         except Exception as e:
             print(f"deviant_art_login issue at : ", e)
             print(traceback.format_exc())
@@ -63,6 +68,7 @@ class LitBot:
         extracted_dict = {}
         for x in range(num_of_articles):
             try:
+                print("scraping article number:")
                 time.sleep(5)
                 self.driver.get('https://www.plot-generator.org.uk/story/')
                 time.sleep(5)
@@ -128,6 +134,7 @@ class LitBot:
 
         try:
             self.driver.get(f'https://www.deviantart.com/search?q={random_letter}')
+            print("extracting deviation links...")
             time.sleep(5)
             link_elements = self.driver.find_elements_by_css_selector(link_el_selector)
 
@@ -151,6 +158,7 @@ class LitBot:
         comment_btn_xpath = "//button[contains(.,'Cancel')]/following-sibling::button"
         try:
             self.driver.get(single_link)
+            print(f"making comment on {single_link}")
             time.sleep(5)
             element = self.driver.find_element_by_css_selector(selector)
             self.driver.execute_script("arguments[0].scrollIntoView();", element)
@@ -161,7 +169,8 @@ class LitBot:
             time.sleep(5)
             btn_element = self.driver.find_element_by_xpath(comment_btn_xpath)
             ActionChains(self.driver).move_to_element(btn_element).click(btn_element).perform()
-
+            time.sleep(5)
+            print("commment posted!")
         except Exception as e:
             print(f"deviant_art link extraction issue at : ", e)
             print(traceback.format_exc())
@@ -175,13 +184,14 @@ if __name__ == "__main__":
 
     lb.deviant_art_login()
     for i in range(len(extracted_text_dict)):
+        print("submitting article number: ")
         lb.submit_words(extracted_text_dict.get(i)[0], extracted_text_dict.get(i)[1])
 
-    dev_links = lb.deviant_art_extract_links()
-
-    for link in dev_links:
-        random_comment = random.choice(comments_list)
-        lb.deviation_commenter(link, random_comment)
+    # dev_links = lb.deviant_art_extract_links()
+    #
+    # for link in dev_links:
+    #     random_comment = random.choice(comments_list)
+    #     lb.deviation_commenter(link, random_comment)
 
 
 
