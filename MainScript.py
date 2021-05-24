@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
-comments_path = constants.comments_path
+comments_path = constants.comments_path2
 num_of_articles = random.randint(5, 10)
 comments_list = []
 
