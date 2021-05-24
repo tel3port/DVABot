@@ -30,26 +30,26 @@ class LitBot:
         chrome_options.add_argument("--incognito")
         chrome_options.add_argument("--disable-dev-sgm-usage")
         chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--start-maximized")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--disable-popup-blocking")
         chrome_options.add_argument("--disable-infobars")
         chrome_options.add_experimental_option("excludeSwitches", ['enable-automation'])
+        chrome_options.add_argument('--window-size=1920,1080')
         chrome_options.add_argument("--headless")
         chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
         self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
         # self.driver = webdriver.Chrome("/home/m/PycharmProjects/DVABot/resources/chromedriver", options=chrome_options)
 
     def deviant_art_login(self):
+
         username_xpath = '//*[@id="username"]'
         password_xpath = '//*[@id="password"]'
         login_xpath = '//*[@id="loginbutton"]'
 
         try:
             print("login to DA")
-            getsite = self.driver.get('https://www.deviantart.com/users/login')
+            self.driver.get('https://www.deviantart.com/users/login')
             time.sleep(20)
-            print(getsite)
             self.driver.find_element_by_xpath(username_xpath).send_keys(self.username)
             self.driver.find_element_by_xpath(password_xpath).send_keys(self.password)
             time.sleep(5)
