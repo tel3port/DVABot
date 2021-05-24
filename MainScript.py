@@ -181,20 +181,20 @@ class LitBot:
 
 
 if __name__ == "__main__":
-    lb = LitBot("saber20k", 'q-MnK&5n"x#i#@F')
+    lb = LitBot("username", 'password')
 
-    # extracted_text_dict = lb.scrape_written_content()
+    extracted_text_dict = lb.scrape_written_content()
 
     lb.deviant_art_login()
-    # for i in range(len(extracted_text_dict)):
-    #     print("submitting article number: ", i)
-    #     lb.submit_words(extracted_text_dict.get(i)[0], extracted_text_dict.get(i)[1])
+    for i in range(len(extracted_text_dict)):
+        print("submitting article number: ", i)
+        lb.submit_words(extracted_text_dict.get(i)[0], extracted_text_dict.get(i)[1])
 
-    # dev_links = lb.deviant_art_extract_links()
-    #
-    # for link in dev_links:
-    #     random_comment = random.choice(comments_list)
-    #     lb.deviation_commenter(link, random_comment)
+    dev_links = lb.deviant_art_extract_links()
+    
+    for link in dev_links:
+        random_comment = random.choice(comments_list)
+        lb.deviation_commenter(link, random_comment)
 
 
 
