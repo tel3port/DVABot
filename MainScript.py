@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
-comments_path = constants.comments_path2
+comments_path = constants.comments_path2_remote
 num_of_articles = random.randint(5, 10)
 comments_list = []
 
@@ -180,12 +180,12 @@ class LitBot:
 if __name__ == "__main__":
     lb = LitBot("saber20k", 'q-MnK&5n"x#i#@F')
 
-    extracted_text_dict = lb.scrape_written_content()
+    # extracted_text_dict = lb.scrape_written_content()
 
     lb.deviant_art_login()
-    for i in range(len(extracted_text_dict)):
-        print("submitting article number: ")
-        lb.submit_words(extracted_text_dict.get(i)[0], extracted_text_dict.get(i)[1])
+    # for i in range(len(extracted_text_dict)):
+    #     print("submitting article number: ", i)
+    #     lb.submit_words(extracted_text_dict.get(i)[0], extracted_text_dict.get(i)[1])
 
     # dev_links = lb.deviant_art_extract_links()
     #
