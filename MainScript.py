@@ -51,6 +51,7 @@ class LitBot:
             print("login to DA")
             self.driver.get('https://www.deviantart.com/users/login')
             time.sleep(10)
+            print(self.driver.page_source)
             self.driver.find_element_by_xpath(username_xpath).send_keys(self.username)
             self.driver.find_element_by_xpath(password_xpath).send_keys(self.password)
             time.sleep(5)
